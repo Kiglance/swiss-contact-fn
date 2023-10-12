@@ -182,8 +182,6 @@ const Projects = () => {
     };
   });
 
-  console.log(data, "KKKKK");
-
   const columns = [
     {
       title: "Project name",
@@ -230,7 +228,6 @@ const Projects = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         setProject(record);
-                        console.log(record?.key);
                       }}
                     >
                       <Tag color={color} key={tag} className="cursor-pointer">

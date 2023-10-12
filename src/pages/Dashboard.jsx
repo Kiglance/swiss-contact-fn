@@ -26,9 +26,6 @@ const Dashboard = () => {
     if (!loginData) {
       return nav("/");
     }
-    // if (loginData && loginData?.type !== "user") {
-    //   return nav("/school/dashboard");
-    // }
   }, []);
 
   return (
@@ -36,7 +33,7 @@ const Dashboard = () => {
       <Navbar toggleSideBar={toggleSideBar} />
       <Sidebar showSideBar={showSideBar} setShowSideBar={setShowSideBar} />
       <div className="md:pl-44">
-        <div className="md:px-10 sm:px-4 px-2 pt-16">
+        <div className="md:px-10 sm:px-4 px-2 pt-16 max-w-[960px] mx-auto">
           {contentData === 0 && <DashboardMain />}
           {contentData === 1 && <Schools />}
           {contentData === 2 && <Projects />}

@@ -117,8 +117,6 @@ const School = () => {
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
-  console.log(schoolData, "**");
-
   const school = schoolData?.data?.data;
 
   const beforeUpload = (file) => {

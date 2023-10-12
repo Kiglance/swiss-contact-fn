@@ -14,7 +14,6 @@ const DashboardContent = () => {
   const { loginData } = useLoginData();
   const [currentDate, setCurrentDate] = useState(new Date().toDateString());
 
-  console.log(projects);
   useEffect(() => {
     dispatch(fetchSchools());
     if (loginData?.type === "user") {
@@ -50,7 +49,7 @@ const DashboardContent = () => {
           <span className="text-5xl text-zinc-700 font-bold">
             {projects?.length}
           </span>
-          {projects?.length > 1 ? "Project" : "Project"}
+          {projects?.length > 1 ? "Projects" : "Project"}
         </div>
         <div
           className={`flex flex-col items-center bg-[#57cf9d] min-w-[162.83px] w-fit px-10 py-4 rounded-md ${
