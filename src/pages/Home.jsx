@@ -15,6 +15,7 @@ const Home = () => {
   const [isAdmin, setIsAdmin] = useState(true);
   const { loginData, setLoginData } = useLoginData();
   const { contentData, setContentData } = useContent();
+  const [loading, setLoading] = useState(false);
 
   const showModal = () => {
     setOpen(true);
@@ -25,10 +26,12 @@ const Home = () => {
   };
 
   const handleSubmit = (values) => {
+    setLoading(true);
     if (isAdmin) {
       dispatch(loginUser(values))
         .then((res) => {
           setLoginData(JSON.parse(localStorage.getItem("loginData")));
+          setLoading(false);
         })
         .then(() => {
           setContentData(0);
@@ -39,6 +42,7 @@ const Home = () => {
       dispatch(loginSchool(values))
         .then((res) => {
           setLoginData(JSON.parse(localStorage.getItem("loginData")));
+          setLoading(false);
         })
         .then(() => {
           setContentData(0);
@@ -142,6 +146,7 @@ const Home = () => {
               <Button
                 type="primary"
                 htmlType="submit"
+                loading={loading}
                 className="bg-[#57cf9d] border-none px-8 text-white"
               >
                 Login

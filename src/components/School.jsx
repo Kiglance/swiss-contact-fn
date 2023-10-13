@@ -116,6 +116,8 @@ const School = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [schoolLoading, setSchoolLoading] = useState(false);
 
   const school = schoolData?.data?.data;
 
@@ -148,24 +150,40 @@ const School = () => {
   urlId.includes("?")
     ? (schoolId = urlId.slice(0, urlId.lastIndexOf("?")))
     : (schoolId = urlId);
+
   useEffect(() => {
-    dispatch(fetchSchoolProjects(schoolId));
-    dispatch(fetchOneSchool(schoolId));
+    setLoading(true);
+    setSchoolLoading(true);
+    dispatch(fetchSchoolProjects(schoolId)).then(() => {
+      setLoading(false);
+    });
+    dispatch(fetchOneSchool(schoolId)).then(() => {
+      setSchoolLoading(false);
+    });
   }, []);
 
   const deleteProject = () => {
+    setLoading(true);
     dispatch(deleteProjectAction(project?.key)).then(() => {
-      dispatch(fetchSchoolProjects(schoolId));
+      dispatch(fetchSchoolProjects(schoolId)).the(() => {
+        setLoading(false);
+      });
     });
   };
 
   const changeStatus = (e) => {
+    setLoading(true);
+    setSchoolLoading(true);
     dispatch(updateProjectStatus(project?.key, { status: e.target.innerText }))
       .then(() => {
-        dispatch(fetchOneSchool(schoolId));
+        dispatch(fetchOneSchool(schoolId)).then(() => {
+          setSchoolLoading(false);
+        });
       })
       .then(() => {
-        dispatch(fetchSchoolProjects(schoolId));
+        dispatch(fetchSchoolProjects(schoolId)).then(() => {
+          setLoading(false);
+        });
       });
   };
 
@@ -397,55 +415,62 @@ const School = () => {
         <AiOutlineArrowLeft className="" />
       </div>
       <div className="w-[98%] sm:w-[90%] md:w-4/5 max-w-[1200px] md:pt-10 pt-14 mx-auto ">
-        <div className="bg-zinc-300 sm:min-h-[150px] sm:max-h-56  rounded-lg p-4 sm:p-8 flex sm:flex-row flex-col items-start gap-4 xs:w-fit w-full">
-          <img
-            src={school?.picture}
-            alt=""
-            className="w-40 aspect-square object-cover rounded-md"
-          />
-          <div className="flex md:flex-row flex-col items-start gap-5 max-h-[155px] overflow-auto">
-            <div className="flex flex-col gap-5">
-              <div className="flex items-center gap-3">
-                <span className=" font-bold">Name: </span>
-                <h1 className="">{school?.schoolName}</h1>
+        {schoolLoading ? (
+          <div className="bg-emerald-200 sm:min-h-[224px] sm:max-h-56  rounded-lg p-4 sm:p-8 flex flex-col items-center justify-center xs:w-fit w-full min-w-fit xs:min-w-[620px]">
+            <Spin />
+          </div>
+        ) : (
+          <div className="bg-emerald-200 sm:min-h-[150px] sm:max-h-56  rounded-lg p-4 sm:p-8 flex sm:flex-row flex-col items-start gap-4 xs:w-fit w-full">
+            <img
+              src={school?.picture}
+              alt=""
+              className="w-40 aspect-square object-cover rounded-md"
+            />
+            <div className="flex md:flex-row flex-col items-start gap-5 max-h-[155px] overflow-auto">
+              <div className="flex flex-col gap-5">
+                <div className="flex items-center gap-3">
+                  <span className=" font-bold">Name: </span>
+                  <h1 className="">{school?.schoolName}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className=" font-bold">District: </span>
+                  <h1 className="">{school?.district}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className=" font-bold">Sector: </span>
+                  <h1 className="">{school?.sector}</h1>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className=" font-bold">District: </span>
-                <h1 className="">{school?.district}</h1>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className=" font-bold">Sector: </span>
-                <h1 className="">{school?.sector}</h1>
-              </div>
-            </div>
-            <div className="flex flex-col gap-5">
-              <div className="flex items-center gap-3">
-                <span className=" font-bold">Phone: </span>
-                <h1 className="">{school?.phone}</h1>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className=" font-bold">Email: </span>
-                <h1 className="">{school?.email}</h1>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className=" font-bold">Status: </span>
-                <h1 className="">
-                  <Tag
-                    color={`${
-                      school?.status === "granted"
-                        ? "green"
-                        : school?.status === "revoked"
-                        ? "volcano"
-                        : "gold"
-                    }`}
-                  >
-                    {school?.status}
-                  </Tag>
-                </h1>
+              <div className="flex flex-col gap-5">
+                <div className="flex items-center gap-3">
+                  <span className=" font-bold">Phone: </span>
+                  <h1 className="">{school?.phone}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className=" font-bold">Email: </span>
+                  <h1 className="">{school?.email}</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className=" font-bold">Status: </span>
+                  <h1 className="">
+                    <Tag
+                      color={`${
+                        school?.status === "granted"
+                          ? "green"
+                          : school?.status === "revoked"
+                          ? "volcano"
+                          : "gold"
+                      }`}
+                    >
+                      {school?.status}
+                    </Tag>
+                  </h1>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
         <div className="flex items-center justify-between relative py-2">
           <h1 className={`text-xl`}>Projects ({data?.length})</h1>{" "}
           <Button
@@ -536,6 +561,7 @@ const School = () => {
             position: ["bottomCenter"],
           }}
           size="middle"
+          loading={loading}
         />
 
         <Modal open={open} footer={[]} onCancel={closeModal} style={{}}>

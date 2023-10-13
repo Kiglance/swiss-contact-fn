@@ -15,6 +15,7 @@ const Settings = () => {
   const [picUrl, setPicUrl] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   const user = admin?.data?.data?.data;
   const school = schoolData?.data?.data;
@@ -51,6 +52,8 @@ const Settings = () => {
   const handleSubmitUpdateUser = async (values) => {
     const formData = new FormData();
 
+    setLoading(true);
+
     formData.append("firstName", values.firstName);
     formData.append("lastName", values.lastName);
     formData.append("email", values.email);
@@ -61,11 +64,14 @@ const Settings = () => {
       dispatch(fetchUser(id));
       setIsEditing(false);
       form.resetFields();
+      setLoading(false);
     });
   };
 
   const handleSubmitUpdateSchool = async (values) => {
     const formData = new FormData();
+
+    setLoading(true);
 
     formData.append("schoolName", values.schoolName);
     formData.append("district", values.district);
@@ -79,6 +85,7 @@ const Settings = () => {
       dispatch(fetchOneSchool(id));
       setIsEditing(false);
       form.resetFields();
+      setLoading(false);
     });
   };
 
@@ -225,6 +232,7 @@ const Settings = () => {
                   </Row>
                   <div className="flex items-center gap-3">
                     <Button
+                      loading={loading}
                       className="bg-[#57cf9d] border-none px-8 text-white"
                       htmlType="submit"
                     >
@@ -367,6 +375,7 @@ const Settings = () => {
                   </Row>
                   <div className="flex items-center gap-3">
                     <Button
+                      loading={loading}
                       className="bg-[#57cf9d] border-none px-8 text-white"
                       htmlType="submit"
                     >

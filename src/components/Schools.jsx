@@ -91,7 +91,8 @@ const Schools = () => {
   const [school, setSchool] = useState({});
   const [open, setOpen] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
-  const [loading, setLoading] = useState(schools?.loading);
+  const [loading, setLoading] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
@@ -121,8 +122,11 @@ const Schools = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchSchools());
-  }, []);
+    setLoading(true);
+    dispatch(fetchSchools()).then(() => {
+      setLoading(false);
+    });
+  }, [dispatch]);
 
   const deleteSchool = () => {
     dispatch(deleteSChool(school?.key)).then(() => {
@@ -135,10 +139,13 @@ const Schools = () => {
   };
 
   const changeStatus = (e) => {
+    setLoading(true);
     dispatch(
       changeSchoolStatus(school?.key, { status: e.target.innerText })
     ).then(() => {
-      dispatch(fetchSchools());
+      dispatch(fetchSchools()).then(() => {
+        setLoading(false);
+      });
     });
   };
 
@@ -279,10 +286,14 @@ const Schools = () => {
   };
 
   const handleSubmit = async (values) => {
+    setCreateLoading(true);
+    setLoading(true);
     await dispatch(addSchool(values))
       .then(() => {
         dispatch(fetchSchools());
         setOpen(false);
+        setCreateLoading(false);
+        setLoading(false);
       })
       .then(() => {
         form.resetFields();
@@ -290,10 +301,14 @@ const Schools = () => {
   };
 
   const handleSubmitUpdate = async (values) => {
+    setCreateLoading(true);
+    setLoading(true);
     await dispatch(changeSchoolStatus(school?.key, values))
       .then(() => {
         dispatch(fetchSchools());
         setOpenUpdateModal(false);
+        setCreateLoading(false);
+        setLoading(false);
       })
       .then(() => {
         updateForm.resetFields();
@@ -522,6 +537,7 @@ const Schools = () => {
             }}
           >
             <Button
+              loading={createLoading}
               type="primary"
               htmlType="submit"
               className="bg-[#57cf9d] border-none px-8 text-white"
@@ -531,8 +547,6 @@ const Schools = () => {
           </Form.Item>
         </Form>
       </Modal>
-
-      {/* #################################################################################################################################################################################################################################################### */}
       <Modal
         open={openUpdateModal}
         footer={[]}
@@ -643,6 +657,7 @@ const Schools = () => {
             }}
           >
             <Button
+              loading={createLoading}
               type="primary"
               htmlType="submit"
               className="bg-[#57cf9d] border-none px-8 text-white"

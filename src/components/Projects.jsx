@@ -109,6 +109,8 @@ const Projects = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
 
   const beforeUpload = (file) => {
     if (file.type === "application/pdf") {
@@ -294,10 +296,16 @@ const Projects = () => {
   ];
 
   useEffect(() => {
+    setTableLoading(true);
+
     if (loginData?.type === "user") {
-      dispatch(fetchAdminProjects());
+      dispatch(fetchAdminProjects()).then(() => {
+        setTableLoading(false);
+      });
     } else {
-      dispatch(fetchProjects());
+      dispatch(fetchProjects()).then(() => {
+        setTableLoading(false);
+      });
     }
   }, []);
   const filteredData = data?.filter((value) => {
@@ -325,10 +333,13 @@ const Projects = () => {
     formData.append("projectOwner", values?.projectOwner);
     formData.append("projectFile", filePdf);
 
+    setLoading(true);
+
     await dispatch(addProject(formData))
       .then(() => {
         dispatch(fetchProjects());
         setOpen(false);
+        setLoading(false);
       })
       .then(() => {
         form.resetFields();
@@ -340,6 +351,7 @@ const Projects = () => {
   const handleSubmitUpdate = async (values) => {
     const formData = new FormData();
 
+    setLoading(true);
     formData.append("projectName", values?.projectName);
     formData.append("projectOwner", values?.projectOwner);
     formData.append("projectFile", filePdf);
@@ -348,6 +360,7 @@ const Projects = () => {
       .then(() => {
         dispatch(fetchProjects());
         setOpenUpdateModal(false);
+        setLoading(false);
       })
       .then(() => {
         updateForm.resetFields();
@@ -476,7 +489,7 @@ const Projects = () => {
           position: ["bottomCenter"],
         }}
         size="middle"
-        // loading={loading}
+        loading={tableLoading}
       />
 
       <Modal open={open} footer={[]} onCancel={closeModal} style={{}}>
@@ -571,6 +584,7 @@ const Projects = () => {
             }}
           >
             <Button
+              loading={loading}
               type="primary"
               htmlType="submit"
               className="bg-[#57cf9d] border-none px-8 text-white"
@@ -677,6 +691,7 @@ const Projects = () => {
             }}
           >
             <Button
+              loading={loading}
               type="primary"
               htmlType="submit"
               className="bg-[#57cf9d] border-none px-8 text-white"

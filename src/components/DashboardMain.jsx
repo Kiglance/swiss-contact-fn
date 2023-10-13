@@ -6,6 +6,7 @@ import {
   fetchProjects,
 } from "../redux/actions/project.actions";
 import { useLoginData } from "../context/LoginContext";
+import { Spin } from "antd";
 
 const DashboardContent = () => {
   const dispatch = useDispatch();
@@ -13,13 +14,19 @@ const DashboardContent = () => {
   const projects = useSelector((state) => state.projectReducer)?.data?.data;
   const { loginData } = useLoginData();
   const [currentDate, setCurrentDate] = useState(new Date().toDateString());
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     dispatch(fetchSchools());
     if (loginData?.type === "user") {
-      dispatch(fetchAdminProjects());
+      dispatch(fetchAdminProjects()).then(() => {
+        setLoading(false);
+      });
     } else {
-      dispatch(fetchProjects());
+      dispatch(fetchProjects()).then(() => {
+        setLoading(false);
+      });
     }
     setCurrentDate(new Date().toDateString());
   }, []);
@@ -40,23 +47,44 @@ const DashboardContent = () => {
             loginData?.type !== "user" && "hidden"
           }`}
         >
-          <span className="text-5xl text-zinc-700 font-bold">
-            {schools?.length}
-          </span>
+          {loading ? (
+            <span className="text-5xl text-zinc-700 font-bold">
+              <Spin />
+            </span>
+          ) : (
+            <span className="text-5xl text-zinc-700 font-bold">
+              {schools?.length}
+            </span>
+          )}
+
           {schools?.length > 1 ? "Schools" : "School"}
         </div>
         <div className="flex flex-col items-center bg-[#57cf9d] min-w-[162.83px] w-fit px-10 py-4 rounded-md">
-          <span className="text-5xl text-zinc-700 font-bold">
-            {projects?.length}
-          </span>
-          {projects?.length > 1 ? "Projects" : "Project"}
+          {loading ? (
+            <span className="text-5xl text-zinc-700 font-bold">
+              <Spin />
+            </span>
+          ) : (
+            <span className="text-5xl text-zinc-700 font-bold">
+              {projects?.length}
+            </span>
+          )}
+
+          {projects?.length !== 1 ? "Projects" : "Project"}
         </div>
         <div
           className={`flex flex-col items-center bg-[#57cf9d] min-w-[162.83px] w-fit px-10 py-4 rounded-md ${
             loginData?.type !== "user" && "hidden"
           }`}
         >
-          <span className="text-5xl text-zinc-700 font-bold">2</span>Users
+          {loading ? (
+            <span className="text-5xl text-zinc-700 font-bold">
+              <Spin />
+            </span>
+          ) : (
+            <span className="text-5xl text-zinc-700 font-bold">2</span>
+          )}
+          Users
         </div>
       </div>
     </div>
